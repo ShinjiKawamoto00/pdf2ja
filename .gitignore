@@ -1,11 +1,11 @@
 # Experimental kernel files
 *.csv
-pdf2zh/kernel/PDFMathTranslate-next.git/*.csv
-pdf2zh/kernel/PDFMathTranslate-next.git/*.pdf
+pdf2ja/kernel/PDFMathTranslate-next.git/*.csv
+pdf2ja/kernel/PDFMathTranslate-next.git/*.pdf
 
 # PDF Files
-pdf2zh_files
-gui/pdf2zh_files
+pdf2ja_files
+gui/pdf2ja_files
 gradio_files
 tmp
 gui/gradio_files
@@ -14,6 +14,10 @@ gui/tmp
 __pycache__/
 *.py[cod]
 *$py.class
+
+# 個人メモ・作業用ファイル
+pdf2ja.md
+pdf
 
 # C extensions
 *.so
@@ -141,7 +145,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-pdf2zh-dev/
+pdf2ja-dev/
 
 # Spyder project settings
 .spyderproject
