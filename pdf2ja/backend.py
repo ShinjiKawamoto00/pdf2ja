@@ -1,13 +1,13 @@
 from flask import Flask, request, send_file
 from celery import Celery, Task
 from celery.result import AsyncResult
-from pdf2zh import translate_stream
+from pdf2ja import translate_stream
 import tqdm
 import json
 import io
 from string import Template
-from pdf2zh.doclayout import ModelInstance
-from pdf2zh.config import ConfigManager
+from pdf2ja.doclayout import ModelInstance
+from pdf2ja.config import ConfigManager
 
 flask_app = Flask("pdf2zh")
 flask_app.config.from_mapping(

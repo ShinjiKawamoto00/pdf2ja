@@ -15,7 +15,7 @@ class TestKernelProtocol(unittest.TestCase):
     """Test TranslateRequest and TranslateResult dataclasses."""
 
     def test_translate_request_defaults(self):
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         req = TranslateRequest(files=["test.pdf"])
         self.assertEqual(req.files, ["test.pdf"])
@@ -27,7 +27,7 @@ class TestKernelProtocol(unittest.TestCase):
         self.assertFalse(req.debug)
 
     def test_translate_result_defaults(self):
-        from pdf2zh.kernel.protocol import TranslateResult
+        from pdf2ja.kernel.protocol import TranslateResult
 
         result = TranslateResult()
         self.assertIsNone(result.mono_pdf)
@@ -35,7 +35,7 @@ class TestKernelProtocol(unittest.TestCase):
         self.assertEqual(result.time_cost, 0.0)
 
     def test_translate_result_with_paths(self):
-        from pdf2zh.kernel.protocol import TranslateResult
+        from pdf2ja.kernel.protocol import TranslateResult
 
         result = TranslateResult(
             mono_pdf=Path("/tmp/mono.pdf"),
@@ -50,7 +50,7 @@ class TestKernelRegistry(unittest.TestCase):
     """Test KernelRegistry singleton."""
 
     def setUp(self):
-        from pdf2zh.kernel.registry import KernelRegistry
+        from pdf2ja.kernel.registry import KernelRegistry
 
         self._registry = KernelRegistry
         self._orig_kernels = dict(KernelRegistry._kernels)
@@ -61,7 +61,7 @@ class TestKernelRegistry(unittest.TestCase):
         self._registry._active = self._orig_active
 
     def test_register_and_get(self):
-        from pdf2zh.kernel.registry import KernelRegistry
+        from pdf2ja.kernel.registry import KernelRegistry
 
         mock_kernel = MagicMock()
         mock_kernel.name = "test_kernel"
@@ -71,13 +71,13 @@ class TestKernelRegistry(unittest.TestCase):
         self.assertIs(KernelRegistry.get("test_kernel"), mock_kernel)
 
     def test_get_nonexistent_raises(self):
-        from pdf2zh.kernel.registry import KernelRegistry
+        from pdf2ja.kernel.registry import KernelRegistry
 
         with self.assertRaises(KeyError):
             KernelRegistry.get("nonexistent_kernel_xyz")
 
     def test_switch_and_active_name(self):
-        from pdf2zh.kernel.registry import KernelRegistry
+        from pdf2ja.kernel.registry import KernelRegistry
 
         mock_kernel = MagicMock()
         mock_kernel.name = "switchable"
@@ -88,7 +88,7 @@ class TestKernelRegistry(unittest.TestCase):
         self.assertEqual(KernelRegistry.active_name(), "switchable")
 
     def test_switch_unavailable_raises(self):
-        from pdf2zh.kernel.registry import KernelRegistry
+        from pdf2ja.kernel.registry import KernelRegistry
 
         mock_kernel = MagicMock()
         mock_kernel.name = "unavailable"
@@ -99,7 +99,7 @@ class TestKernelRegistry(unittest.TestCase):
             KernelRegistry.switch("unavailable")
 
     def test_available_filters_correctly(self):
-        from pdf2zh.kernel.registry import KernelRegistry
+        from pdf2ja.kernel.registry import KernelRegistry
 
         k1 = MagicMock()
         k1.name = "avail1"
@@ -120,19 +120,19 @@ class TestKernelRegistry(unittest.TestCase):
 class TestLegacyKernelVersion(unittest.TestCase):
 
     def test_name(self):
-        from pdf2zh.kernel.legacy import LegacyKernel
+        from pdf2ja.kernel.legacy import LegacyKernel
 
         k = LegacyKernel()
         self.assertEqual(k.name, "fast")
 
     def test_version(self):
-        from pdf2zh.kernel.legacy import LegacyKernel
+        from pdf2ja.kernel.legacy import LegacyKernel
 
         k = LegacyKernel()
         self.assertEqual(k.version, "1.9.12")
 
     def test_is_available(self):
-        from pdf2zh.kernel.legacy import LegacyKernel
+        from pdf2ja.kernel.legacy import LegacyKernel
 
         k = LegacyKernel()
         self.assertTrue(k.is_available())
@@ -141,13 +141,13 @@ class TestLegacyKernelVersion(unittest.TestCase):
 class TestPreciseKernelVersion(unittest.TestCase):
 
     def test_name(self):
-        from pdf2zh.kernel.precise import PreciseKernel
+        from pdf2ja.kernel.precise import PreciseKernel
 
         k = PreciseKernel()
         self.assertEqual(k.name, "precise")
 
     def test_is_available_without_venv(self):
-        from pdf2zh.kernel.precise import PreciseKernel
+        from pdf2ja.kernel.precise import PreciseKernel
 
         k = PreciseKernel()
         result = k.is_available()
@@ -158,8 +158,8 @@ class TestV2Bridge(unittest.TestCase):
     """Test v2 bridge v1 → v2 CLI args + env mapping."""
 
     def test_cli_args_basic(self):
-        from pdf2zh.kernel.v2_bridge import request_to_cli_args
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.v2_bridge import request_to_cli_args
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         req = TranslateRequest(
             files=["test.pdf"],
@@ -179,8 +179,8 @@ class TestV2Bridge(unittest.TestCase):
         self.assertIn("--google", args)
 
     def test_cli_args_pages(self):
-        from pdf2zh.kernel.v2_bridge import request_to_cli_args
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.v2_bridge import request_to_cli_args
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         req = TranslateRequest(files=["test.pdf"], pages=[0, 1, 4])
         args = request_to_cli_args(req)
@@ -188,16 +188,16 @@ class TestV2Bridge(unittest.TestCase):
         self.assertIn("0,1,4", args)
 
     def test_cli_args_compatible(self):
-        from pdf2zh.kernel.v2_bridge import request_to_cli_args
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.v2_bridge import request_to_cli_args
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         req = TranslateRequest(files=["test.pdf"], compatible=True)
         args = request_to_cli_args(req)
         self.assertIn("--enhance-compatibility", args)
 
     def test_cli_args_vfont_vchar(self):
-        from pdf2zh.kernel.v2_bridge import request_to_cli_args
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.v2_bridge import request_to_cli_args
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         req = TranslateRequest(files=["test.pdf"], vfont="Arial", vchar="[a-z]")
         args = request_to_cli_args(req)
@@ -207,8 +207,8 @@ class TestV2Bridge(unittest.TestCase):
         self.assertIn("[a-z]", args)
 
     def test_cli_args_prompt(self):
-        from pdf2zh.kernel.v2_bridge import request_to_cli_args
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.v2_bridge import request_to_cli_args
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         req = TranslateRequest(files=["test.pdf"], prompt="Be formal")
         args = request_to_cli_args(req)
@@ -216,16 +216,16 @@ class TestV2Bridge(unittest.TestCase):
         self.assertIn("Be formal", args)
 
     def test_cli_args_debug(self):
-        from pdf2zh.kernel.v2_bridge import request_to_cli_args
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.v2_bridge import request_to_cli_args
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         req = TranslateRequest(files=["test.pdf"], debug=True)
         args = request_to_cli_args(req)
         self.assertIn("--debug", args)
 
     def test_cli_args_ignore_cache(self):
-        from pdf2zh.kernel.v2_bridge import request_to_cli_args
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.v2_bridge import request_to_cli_args
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         req = TranslateRequest(files=["test.pdf"], ignore_cache=True)
         args = request_to_cli_args(req)
@@ -233,8 +233,8 @@ class TestV2Bridge(unittest.TestCase):
 
     def test_cli_args_output(self):
         from pathlib import Path
-        from pdf2zh.kernel.v2_bridge import request_to_cli_args
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.v2_bridge import request_to_cli_args
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         req = TranslateRequest(files=["test.pdf"], output="/tmp/out")
         args = request_to_cli_args(req)
@@ -243,15 +243,15 @@ class TestV2Bridge(unittest.TestCase):
         self.assertEqual(args[idx + 1], str(Path("/tmp/out").resolve()))
 
     def test_cli_args_service_model_split(self):
-        from pdf2zh.kernel.v2_bridge import request_to_cli_args
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.v2_bridge import request_to_cli_args
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         req = TranslateRequest(files=["test.pdf"], service="openai:gpt-4")
         args = request_to_cli_args(req)
         self.assertIn("--openai", args)
 
     def test_service_name_mapping(self):
-        from pdf2zh.kernel.v2_bridge import SERVICE_NAME_MAP
+        from pdf2ja.kernel.v2_bridge import SERVICE_NAME_MAP
 
         # Verify key service mappings exist (values are CLI flags)
         self.assertEqual(SERVICE_NAME_MAP["google"], "google")
@@ -264,8 +264,8 @@ class TestV2Bridge(unittest.TestCase):
         self.assertEqual(SERVICE_NAME_MAP["tencent"], "tencent")
 
     def test_request_to_env_maps_envs(self):
-        from pdf2zh.kernel.v2_bridge import request_to_env
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.v2_bridge import request_to_env
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         req = TranslateRequest(
             files=["test.pdf"],
@@ -280,8 +280,8 @@ class TestV2Bridge(unittest.TestCase):
         self.assertEqual(env["PDF2ZH_OPENAI_BASE_URL"], "https://custom.api")
 
     def test_request_to_env_service_model(self):
-        from pdf2zh.kernel.v2_bridge import request_to_env
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.v2_bridge import request_to_env
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         req = TranslateRequest(
             files=["test.pdf"],
@@ -296,19 +296,19 @@ class TestV2Bridge(unittest.TestCase):
 class TestKernelInit(unittest.TestCase):
 
     def test_fast_registered(self):
-        from pdf2zh.kernel import KernelRegistry
+        from pdf2ja.kernel import KernelRegistry
 
         kernel = KernelRegistry.get("fast")
         self.assertEqual(kernel.name, "fast")
 
     def test_precise_registered(self):
-        from pdf2zh.kernel import KernelRegistry
+        from pdf2ja.kernel import KernelRegistry
 
         kernel = KernelRegistry.get("precise")
         self.assertEqual(kernel.name, "precise")
 
     def test_fast_in_available(self):
-        from pdf2zh.kernel import KernelRegistry
+        from pdf2ja.kernel import KernelRegistry
 
         self.assertIn("fast", KernelRegistry.available())
 
@@ -317,14 +317,14 @@ class TestKernelVersions(unittest.TestCase):
     """Verify version information for both kernels."""
 
     def test_legacy_version_matches_package(self):
-        from pdf2zh import __version__
-        from pdf2zh.kernel.legacy import LegacyKernel
+        from pdf2ja import __version__
+        from pdf2ja.kernel.legacy import LegacyKernel
 
         k = LegacyKernel()
         self.assertEqual(k.version, __version__)
 
     def test_experimental_version_is_string(self):
-        from pdf2zh.kernel.precise import PreciseKernel
+        from pdf2ja.kernel.precise import PreciseKernel
 
         k = PreciseKernel()
         version = k.version
@@ -334,7 +334,7 @@ class TestKernelVersions(unittest.TestCase):
     def test_experimental_version_semver_when_available(self):
         """When venv exists, version should be a proper semver."""
         import re
-        from pdf2zh.kernel.precise import PreciseKernel
+        from pdf2ja.kernel.precise import PreciseKernel
 
         k = PreciseKernel()
         if not k.is_available():
@@ -352,8 +352,8 @@ class TestLegacyKernelTranslation(unittest.TestCase):
         mock_model_inst.value = MagicMock()
         mock_translate.return_value = [("/tmp/mono.pdf", "/tmp/dual.pdf")]
 
-        from pdf2zh.kernel.legacy import LegacyKernel
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.legacy import LegacyKernel
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         k = LegacyKernel()
         req = TranslateRequest(files=["test.pdf"], service="google")
@@ -373,8 +373,8 @@ class TestLegacyKernelTranslation(unittest.TestCase):
         mock_model_inst.value = MagicMock()
         mock_translate.return_value = []
 
-        from pdf2zh.kernel.legacy import LegacyKernel
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.legacy import LegacyKernel
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         k = LegacyKernel()
         req = TranslateRequest(
@@ -408,8 +408,8 @@ class TestLegacyKernelTranslation(unittest.TestCase):
         mock_model_inst.value = MagicMock()
         mock_translate.return_value = []
 
-        from pdf2zh.kernel.legacy import LegacyKernel
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.legacy import LegacyKernel
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         k = LegacyKernel()
         req = TranslateRequest(files=["test.pdf"], prompt="Be formal")
@@ -448,8 +448,8 @@ class TestPreciseKernelTranslation(unittest.TestCase):
         mock_proc.wait.return_value = 0
         mock_popen.return_value = mock_proc
 
-        from pdf2zh.kernel.precise import PreciseKernel
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.precise import PreciseKernel
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         k = PreciseKernel()
         req = TranslateRequest(files=["test.pdf"], service="google")
@@ -471,8 +471,8 @@ class TestPreciseKernelTranslation(unittest.TestCase):
         mock_proc.wait.return_value = 1
         mock_popen.return_value = mock_proc
 
-        from pdf2zh.kernel.precise import PreciseKernel
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.precise import PreciseKernel
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         k = PreciseKernel()
         req = TranslateRequest(files=["test.pdf"])
@@ -511,8 +511,8 @@ class TestPreciseKernelTranslation(unittest.TestCase):
         mock_proc.wait.return_value = 0
         mock_popen.return_value = mock_proc
 
-        from pdf2zh.kernel.precise import PreciseKernel
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.precise import PreciseKernel
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         callback = MagicMock()
         k = PreciseKernel()
@@ -529,8 +529,8 @@ class TestV2BridgeEndToEnd(unittest.TestCase):
     """End-to-end v2 bridge tests."""
 
     def test_all_services_produce_cli_flag(self):
-        from pdf2zh.kernel.v2_bridge import SERVICE_NAME_MAP, request_to_cli_args
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.v2_bridge import SERVICE_NAME_MAP, request_to_cli_args
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         for v1_name, v2_flag in SERVICE_NAME_MAP.items():
             req = TranslateRequest(files=["test.pdf"], service=v1_name)
@@ -543,8 +543,8 @@ class TestV2BridgeEndToEnd(unittest.TestCase):
             )
 
     def test_cli_args_all_fields(self):
-        from pdf2zh.kernel.v2_bridge import request_to_cli_args
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.v2_bridge import request_to_cli_args
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         req = TranslateRequest(
             files=["test.pdf"],
@@ -585,8 +585,8 @@ class TestV2BridgeEndToEnd(unittest.TestCase):
         self.assertEqual(args[idx + 1], str(Path("/tmp/out").resolve()))
 
     def test_env_all_fields(self):
-        from pdf2zh.kernel.v2_bridge import request_to_env
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.v2_bridge import request_to_env
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         req = TranslateRequest(
             files=["a.pdf", "b.pdf"],
@@ -599,8 +599,8 @@ class TestV2BridgeEndToEnd(unittest.TestCase):
         self.assertEqual(env["PDF2ZH_GEMINI_MODEL"], "gemini-pro")
 
     def test_output_defaults_to_input_parent(self):
-        from pdf2zh.kernel.v2_bridge import request_to_cli_args
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.v2_bridge import request_to_cli_args
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         req = TranslateRequest(files=["/some/dir/test.pdf"])
         args = request_to_cli_args(req)
@@ -610,8 +610,8 @@ class TestV2BridgeEndToEnd(unittest.TestCase):
 
     def test_output_resolved_to_absolute_path(self):
         from pathlib import Path
-        from pdf2zh.kernel.v2_bridge import request_to_cli_args
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.v2_bridge import request_to_cli_args
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         # Relative input file → output should be resolved to absolute
         req = TranslateRequest(files=["relative/test.pdf"])
@@ -622,8 +622,8 @@ class TestV2BridgeEndToEnd(unittest.TestCase):
 
     def test_explicit_output_resolved_to_absolute(self):
         from pathlib import Path
-        from pdf2zh.kernel.v2_bridge import request_to_cli_args
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel.v2_bridge import request_to_cli_args
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         req = TranslateRequest(files=["test.pdf"], output="rel/out")
         args = request_to_cli_args(req)
@@ -649,7 +649,7 @@ class TestCLIKernelPipeline(unittest.TestCase):
         mock_get.return_value = mock_kernel
         mock_model_inst.value = MagicMock()
 
-        from pdf2zh.pdf2zh import main
+        from pdf2ja.pdf2ja import main
 
         main(["test.pdf", "--mode", "fast"])
 
@@ -670,7 +670,7 @@ class TestCLIKernelPipeline(unittest.TestCase):
         mock_get.return_value = mock_kernel
         mock_model_inst.value = MagicMock()
 
-        from pdf2zh.pdf2zh import main
+        from pdf2ja.pdf2ja import main
 
         main(["test.pdf", "--mode", "precise"])
 
@@ -691,7 +691,7 @@ class TestCLIKernelPipeline(unittest.TestCase):
         mock_get.return_value = mock_kernel
         mock_model_inst.value = MagicMock()
 
-        from pdf2zh.pdf2zh import main
+        from pdf2ja.pdf2ja import main
 
         main(["test.pdf", "-s", "openai:gpt-4"])
 

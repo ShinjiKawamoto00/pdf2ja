@@ -21,8 +21,8 @@ from tencentcloud.tmt.v20180321.models import (
 )
 from tencentcloud.tmt.v20180321.tmt_client import TmtClient
 
-from pdf2zh.cache import TranslationCache
-from pdf2zh.config import ConfigManager
+from pdf2ja.cache import TranslationCache
+from pdf2ja.config import ConfigManager
 
 
 from tenacity import retry, retry_if_exception_type

@@ -8,7 +8,7 @@ from unittest.mock import Mock, patch
 import pymupdf
 import pytest
 
-from pdf2zh.pdf2zh import main, parse_args
+from pdf2ja.pdf2ja import main, parse_args
 
 
 def test_ultrafast_rejects_other_backends():
@@ -24,7 +24,7 @@ def test_ultrafast_rejects_other_backends():
 
 
 def test_worker_defaults_and_overrides():
-    from pdf2zh.kernel.protocol import TranslateRequest
+    from pdf2ja.kernel.protocol import TranslateRequest
 
     assert parse_args([]).thread == 4
     assert parse_args(["--ultrafast"]).thread == 16
@@ -41,8 +41,8 @@ def test_ultrafast_cli_without_models_rendering_or_ocr(tmp_path, rotation, caplo
     pytest.importorskip("pdf_inspector")
     # Keep the translation cache outside the user's home during this check.
     with patch("os.path.expanduser", return_value=tempfile.mkdtemp()):
-        from pdf2zh import high_level
-    from pdf2zh.doclayout import ModelInstance, OnnxModel
+        from pdf2ja import high_level
+    from pdf2ja.doclayout import ModelInstance, OnnxModel
 
     source = tmp_path / "native.pdf"
     with pymupdf.open() as doc:
@@ -142,7 +142,7 @@ def test_ultrafast_cli_without_models_rendering_or_ocr(tmp_path, rotation, caplo
 
 
 def test_no_cache_bypasses_reads_and_writes():
-    from pdf2zh.translator import BaseTranslator
+    from pdf2ja.translator import BaseTranslator
 
     translator = BaseTranslator("en", "zh", "test", False)
     translator.no_cache = True

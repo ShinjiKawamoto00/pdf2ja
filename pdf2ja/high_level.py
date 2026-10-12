@@ -22,7 +22,7 @@ import numpy as np
 import requests
 import tqdm
 
-from pdf2zh.converter_docx import convert_to_pdf, is_convertible
+from pdf2ja.converter_docx import convert_to_pdf, is_convertible
 from pdfminer.pdfdocument import PDFDocument
 from pdfminer.pdfexceptions import PDFValueError
 from pdfminer.pdfinterp import PDFResourceManager
@@ -30,13 +30,13 @@ from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
 from pymupdf import Document, Font
 
-from pdf2zh.converter import TranslateConverter
+from pdf2ja.converter import TranslateConverter
 
 if TYPE_CHECKING:
-    from pdf2zh.doclayout import OnnxModel
-from pdf2zh.pdfinterp import PDFPageInterpreterEx
+    from pdf2ja.doclayout import OnnxModel
+from pdf2ja.pdfinterp import PDFPageInterpreterEx
 
-from pdf2zh.config import ConfigManager
+from pdf2ja.config import ConfigManager
 
 NOTO_NAME = "noto"
 
@@ -123,6 +123,30 @@ def translate_patch(
     assert device is not None
     device.perf = perf
     device.translator.no_cache = ultrafast and ignore_cache
+
+    # 参考文献の改行補正フック
+    original_translate = device.translator.translate
+
+    original_translate = device.translator.translate
+    def wrapped_translate(text_input: str, *args, **kwargs):
+        fixed_in = fix_reference_newlines(text_input)
+        lines_in = fixed_in.splitlines()
+        ref_count = sum(1 for l in lines_in if re.match(r"^(\[\d+\]|\d+\.)", l.strip()))
+        if ref_count >= 4:
+            print(f"[APPLIED fix_reference_newlines] 分割翻訳を実行: {ref_count}件の文献")
+            chunks = []
+            chunk_size = 5
+            for k in range(0, len(lines_in), chunk_size):
+                sub = "\n".join(lines_in[k:k + chunk_size])
+                if sub.strip():
+                    chunks.append(original_translate(sub, *args, **kwargs))
+            result = "\n".join(chunks)
+        else:
+            result = original_translate(fixed_in, *args, **kwargs)
+        return fix_reference_newlines(result)
+
+    device.translator.translate = wrapped_translate
+
     obj_patch = {}
     interpreter = PDFPageInterpreterEx(rsrcmgr, device, obj_patch)
     if pages:
@@ -133,7 +157,7 @@ def translate_patch(
     parser = PDFParser(inf)
     doc = PDFDocument(parser)
     if ultrafast:
-        from pdf2zh.ultrafast import extract_layout, layout_mask
+        from pdf2ja.ultrafast import extract_layout, layout_mask
 
         if text_items is None:
             inf.seek(0)
@@ -181,7 +205,7 @@ def translate_patch(
                 )[:, :, ::-1]
                 page_layout = model.predict(image, imgsz=int(pix.height / 32) * 32)[0]
                 if ocr_pages and pageno in ocr_pages:
-                    from pdf2zh.ocr import translate_ocr_page
+                    from pdf2ja.ocr import translate_ocr_page
 
                     translate_ocr_page(
                         doc_zh[pageno],
@@ -371,6 +395,21 @@ def _ocr_pages(doc, pages, lang_in, cancellation_event):
     return ocr_pages
 
 
+def is_reference_section(text: str) -> bool:
+    """その段落が参考文献リストそのものかどうかを判定"""
+    matches = re.findall(r"\[\d+\]\s+[A-Za-z\u3000-\u9FFF]", text)
+    return len(matches) >= 2 or bool(re.match(r"^\s*\[\d+\]\s+[A-Za-z\u3000-\u9FFF]", text))
+
+
+def fix_reference_newlines(text: str) -> str:
+    if not text or not is_reference_section(text):
+        return text
+    text = re.sub(r"\n+", "\n", text)
+    ref_pattern = r"(?<!^)\s*(?=\[\d+\]\s+[A-Za-z\u3000-\u9FFF]|(?<=\n)\d+\.\s+)"
+    res = re.sub(ref_pattern, "\n", text)
+    return re.sub(r"\n+", "\n", res).strip()
+
+
 def translate_stream(
     stream: bytes,
     pages: Optional[list[int]] = None,
@@ -396,7 +435,7 @@ def translate_stream(
     own_perf = perf is None
     text_items = None
     if ultrafast:
-        from pdf2zh.ultrafast import PerfTimer, extract_layout
+        from pdf2ja.ultrafast import PerfTimer, extract_layout
 
         if own_perf:
             perf = PerfTimer()
@@ -438,6 +477,8 @@ def translate_stream(
             continue
         for font in font_list:
             font_id[font[0]] = page.insert_font(font[0], font[1])
+
+
     xreflen = doc_zh.xref_length()
     for xref in range(1, xreflen):
         for label in ["Resources/", ""]:  # 可能是基于 xobj 的 res
@@ -590,7 +631,7 @@ def translate(
     for file in files:
         perf = None
         if ultrafast:
-            from pdf2zh.ultrafast import PerfTimer
+            from pdf2ja.ultrafast import PerfTimer
 
             perf = PerfTimer()
         if type(file) is str and (
@@ -657,11 +698,11 @@ def translate(
         file_mono = Path(output) / f"{filename}-mono.pdf"
         file_dual = Path(output) / f"{filename}-dual.pdf"
         doc_mono = open(file_mono, "wb")
-        doc_dual = open(file_dual, "wb")
+        #doc_dual = open(file_dual, "wb")
         doc_mono.write(s_mono)
-        doc_dual.write(s_dual)
+        #doc_dual.write(s_dual)
         doc_mono.close()
-        doc_dual.close()
+        #doc_dual.close()
         if perf:
             perf.step("output_write")
             perf.report()
@@ -695,6 +736,6 @@ def download_remote_fonts(lang: str):
         font_path, _ = get_font_and_metadata(font_name)
         font_path = font_path.as_posix()
 
-    logger.info(f"use font: {font_path}")
+    logger.debug(f"use font: {font_path}")
 
     return font_path

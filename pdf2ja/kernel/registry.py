@@ -6,7 +6,7 @@ import threading
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from pdf2zh.kernel.protocol import KernelProtocol
+    from pdf2ja.kernel.protocol import KernelProtocol
 
 
 class KernelRegistry:

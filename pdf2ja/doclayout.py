@@ -91,25 +91,30 @@ class OnnxModel(DocLayoutModel):
         model_path = str(model_path)
         self.model_path = model_path
 
-        # Extract metadata without full model deserialization
+        # 1. メタデータの抽出 (セッション生成前にメモリ解放)
         model = onnx.load(model_path, load_external_data=False)
         metadata = {d.key: d.value for d in model.metadata_props}
         self._stride = ast.literal_eval(metadata["stride"])
         self._names = ast.literal_eval(metadata["names"])
-        del model  # free memory before creating session
+        del model  # メモリ解放
 
+        # 2. SessionOptions の初期化とログレベル設定 (非致命的警告・EP Error の抑制)
         sess_options = onnxruntime.SessionOptions()
+        sess_options.log_severity_level = 3  # Error 以上のみ表示
         sess_options.graph_optimization_level = (
             onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL
         )
 
+        # 3. プロバイダーの決定 (_preferred_backend 優先、無ければ利用可能一覧から)
         if _preferred_backend and _preferred_backend in _BACKEND_PROVIDERS:
             providers = _BACKEND_PROVIDERS[_preferred_backend]
         else:
             providers = onnxruntime.get_available_providers()
 
-        # Providers like CoreML generate compiled nodes that cannot be
-        # serialized, so only cache the optimized graph for CPU-only.
+        # 4. 冗長な EP Error ログの原因となる TensorRT をリストから除外
+        providers = [p for p in providers if p != "TensorrtExecutionProvider"]
+
+        # 5. 最適化グラフのキャッシュ設定
         compiled_providers = {"CoreMLExecutionProvider", "TensorrtExecutionProvider"}
         can_cache = not compiled_providers.intersection(providers)
         if can_cache:
@@ -119,11 +124,23 @@ class OnnxModel(DocLayoutModel):
             else:
                 sess_options.optimized_model_filepath = optimized_path
 
-        self.model = onnxruntime.InferenceSession(
-            model_path, sess_options, providers=providers
-        )
-        logger.info("ONNX Runtime providers: %s", self.model.get_providers())
+        # 6. セッション生成 (失敗時は safe に CPU フォールバック)
+        try:
+            self.model = onnxruntime.InferenceSession(
+                model_path,
+                sess_options=sess_options,
+                providers=providers
+            )
+        except Exception:
+            # 万が一 CUDA 等の初期化に失敗した場合は CPU へ安全に切り替え
+            self.model = onnxruntime.InferenceSession(
+                model_path,
+                sess_options=sess_options,
+                providers=_BACKEND_PROVIDERS.get("cpu", ["CPUExecutionProvider"])
+            )
 
+        logger.debug("ONNX Runtime providers: %s", self.model.get_providers())
+        
     @staticmethod
     def from_pretrained():
         pth = get_doclayout_onnx_model_path()

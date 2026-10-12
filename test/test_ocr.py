@@ -17,9 +17,9 @@ def _expanduser(path):
 
 
 with patch("os.path.expanduser", side_effect=_expanduser):
-    import pdf2zh.high_level as high_level
-    from pdf2zh.high_level import _ocr_pages
-from pdf2zh.doclayout import YoloResult
+    import pdf2ja.high_level as high_level
+    from pdf2ja.high_level import _ocr_pages
+from pdf2ja.doclayout import YoloResult
 
 
 def _source_pdf():

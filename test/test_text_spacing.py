@@ -2,7 +2,7 @@
 
 import unittest
 
-from pdf2zh.text_spacing import add_cjk_latin_spacing
+from pdf2ja.text_spacing import add_cjk_latin_spacing
 
 
 class TestAddCjkLatinSpacing(unittest.TestCase):

@@ -7,7 +7,7 @@ import logging
 from pathlib import Path
 from typing import Any, Optional
 
-from pdf2zh.kernel.protocol import TranslateRequest, TranslateResult
+from pdf2ja.kernel.protocol import TranslateRequest, TranslateResult
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ class LegacyKernel:
 
     @property
     def version(self) -> str:
-        from pdf2zh import __version__
+        from pdf2ja import __version__
 
         return __version__
 
@@ -34,11 +34,11 @@ class LegacyKernel:
         callback: Any = None,
         cancellation_event: Optional[asyncio.Event] = None,
     ) -> list[TranslateResult]:
-        from pdf2zh.high_level import translate
+        from pdf2ja.high_level import translate
 
         model = None
         if not request.ultrafast:
-            from pdf2zh.doclayout import ModelInstance, OnnxModel
+            from pdf2ja.doclayout import ModelInstance, OnnxModel
 
             if ModelInstance.value is None:
                 ModelInstance.value = OnnxModel.load_available()

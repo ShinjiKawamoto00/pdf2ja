@@ -3,8 +3,8 @@ import unittest
 import numpy as np
 import pymupdf
 
-from pdf2zh.doclayout import YoloResult
-from pdf2zh.ocr import ocr_paragraphs, translate_ocr_page
+from pdf2ja.doclayout import YoloResult
+from pdf2ja.ocr import ocr_paragraphs, translate_ocr_page
 
 
 def _pixels(page):

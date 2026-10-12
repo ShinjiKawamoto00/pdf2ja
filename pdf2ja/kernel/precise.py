@@ -11,8 +11,8 @@ import sys
 from pathlib import Path
 from typing import Any, Optional
 
-from pdf2zh.kernel.v2_bridge import request_to_cli_args, request_to_env
-from pdf2zh.kernel.protocol import TranslateRequest, TranslateResult
+from pdf2ja.kernel.v2_bridge import request_to_cli_args, request_to_env
+from pdf2ja.kernel.protocol import TranslateRequest, TranslateResult
 
 logger = logging.getLogger(__name__)
 

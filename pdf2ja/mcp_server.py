@@ -4,9 +4,9 @@ from mcp.server.sse import SseServerTransport
 from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.routing import Mount, Route
-from pdf2zh import translate_stream
-from pdf2zh.converter_docx import convert_to_pdf, is_convertible
-from pdf2zh.doclayout import ModelInstance
+from pdf2ja import translate_stream
+from pdf2ja.converter_docx import convert_to_pdf, is_convertible
+from pdf2ja.doclayout import ModelInstance
 from pathlib import Path
 
 import contextlib

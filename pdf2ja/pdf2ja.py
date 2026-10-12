@@ -12,8 +12,8 @@ import sys
 from string import Template
 from typing import List, Optional
 
-from pdf2zh import __version__, log
-from pdf2zh.converter_docx import convert_to_pdf, is_convertible
+from pdf2ja import __version__, log
+from pdf2ja.converter_docx import convert_to_pdf, is_convertible
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +75,7 @@ def create_parser() -> argparse.ArgumentParser:
         "--lang-out",
         "-lo",
         type=str,
-        default="zh",
+        default="ja",
         help="The code of target language.",
     )
     parse_params.add_argument(
@@ -294,7 +294,7 @@ def main(args: Optional[List[str]] = None) -> int:
     logging.getLogger("http11").propagate = False
 
     if parsed_args.config:
-        from pdf2zh.config import ConfigManager
+        from pdf2ja.config import ConfigManager
 
         ConfigManager.custome_config(parsed_args.config)
 
@@ -302,7 +302,7 @@ def main(args: Optional[List[str]] = None) -> int:
         log.setLevel(logging.DEBUG)
 
     if not parsed_args.ultrafast:
-        from pdf2zh.doclayout import ModelInstance, OnnxModel, set_backend
+        from pdf2ja.doclayout import ModelInstance, OnnxModel, set_backend
 
         set_backend(parsed_args.backend)
         if parsed_args.onnx:
@@ -311,7 +311,7 @@ def main(args: Optional[List[str]] = None) -> int:
             ModelInstance.value = OnnxModel.load_available()
 
     if parsed_args.interactive:
-        from pdf2zh.gui import setup_gui
+        from pdf2ja.gui import setup_gui
 
         if parsed_args.serverport:
             setup_gui(
@@ -322,13 +322,13 @@ def main(args: Optional[List[str]] = None) -> int:
         return 0
 
     if parsed_args.flask:
-        from pdf2zh.backend import flask_app
+        from pdf2ja.backend import flask_app
 
         flask_app.run(port=11008)
         return 0
 
     if parsed_args.celery:
-        from pdf2zh.backend import celery_app
+        from pdf2ja.backend import celery_app
 
         celery_app.start(argv=sys.argv[2:])
         return 0
@@ -343,7 +343,7 @@ def main(args: Optional[List[str]] = None) -> int:
 
     if parsed_args.mcp:
         logging.getLogger("mcp").setLevel(logging.ERROR)
-        from pdf2zh.mcp_server import create_mcp_app, create_starlette_app
+        from pdf2ja.mcp_server import create_mcp_app, create_starlette_app
 
         mcp = create_mcp_app()
         if parsed_args.sse:
@@ -355,14 +355,15 @@ def main(args: Optional[List[str]] = None) -> int:
         mcp.run()
         return 0
 
-    print(parsed_args)
+    if parsed_args.debug:
+        print(parsed_args)
 
     if parsed_args.babeldoc:
         return yadt_main(parsed_args)
 
     # Unified kernel routing — both fast and precise modes go through the registry
-    from pdf2zh.kernel import KernelRegistry
-    from pdf2zh.kernel.protocol import TranslateRequest
+    from pdf2ja.kernel import KernelRegistry
+    from pdf2ja.kernel.protocol import TranslateRequest
 
     KernelRegistry.switch(parsed_args.mode)  # "fast" or "precise"
     kernel = KernelRegistry.get()
@@ -406,7 +407,7 @@ def yadt_main(parsed_args) -> int:
     from babeldoc.high_level import init as yadt_init
     from babeldoc.main import create_progress_handler
     from babeldoc.translation_config import TranslationConfig as YadtConfig
-    from pdf2zh.high_level import download_remote_fonts
+    from pdf2ja.high_level import download_remote_fonts
 
     if parsed_args.dir:
         untranlate_file = find_all_files_in_directory(parsed_args.files[0])
@@ -438,7 +439,7 @@ def yadt_main(parsed_args) -> int:
         except Exception:
             raise ValueError("prompt error.")
 
-    from pdf2zh.translator import (
+    from pdf2ja.translator import (
         AzureOpenAITranslator,
         GoogleTranslator,
         BingTranslator,

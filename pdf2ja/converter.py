@@ -16,8 +16,8 @@ from pdfminer.utils import apply_matrix_pt, mult_matrix
 from pymupdf import Font
 from tenacity import retry, wait_fixed
 
-from pdf2zh.text_spacing import add_cjk_latin_spacing
-from pdf2zh.translator import (
+from pdf2ja.text_spacing import add_cjk_latin_spacing
+from pdf2ja.translator import (
     AnythingLLMTranslator,
     ArgosTranslator,
     AzureOpenAITranslator,
@@ -443,6 +443,22 @@ class TranslateConverter(PDFConverterEx):
                         mod = var[vid][-1].width
                 else:  # 加载文字
                     ch = new[ptr]
+                    if ord(ch) == 10:
+                        if cstk:
+                            ops_vals.append({
+                                "type": OpType.TEXT,
+                                "font": fcur,
+                                "size": size,
+                                "x": tx,
+                                "dy": 0,
+                                "rtxt": raw_string(fcur, cstk),
+                                "lidx": lidx
+                            })
+                            cstk = ""
+                        x = x0
+                        lidx += 1
+                        ptr += 1
+                        continue
                     fcur_ = None
                     try:
                         if fcur_ is None and self.fontmap["tiro"].to_unichr(ord(ch)) == ch:
@@ -533,8 +549,13 @@ class TranslateConverter(PDFConverterEx):
 
             line_height = default_line_height
 
-            while (lidx + 1) * size * line_height > height and line_height >= 1:
-                line_height -= 0.05
+            # 行数が多くて元の枠の高さを超える場合は、line_height を 0.75 まで圧縮し、それでも超える場合はフォントサイズ(size)も比例して自動縮小する
+            while (lidx + 1) * size * line_height > height and line_height >= 0.75:
+                line_height -= 0.03
+            
+            if (lidx + 1) * size * line_height > height:
+                scale_ratio = height / ((lidx + 1) * size * line_height)
+                size = max(size * scale_ratio, 5.0)
 
             for vals in ops_vals:
                 if vals["type"] == OpType.TEXT:

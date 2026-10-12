@@ -4,9 +4,9 @@ from unittest import mock
 
 from ollama import ResponseError as OllamaResponseError
 
-from pdf2zh import cache
-from pdf2zh.config import ConfigManager
-from pdf2zh.translator import BaseTranslator, OllamaTranslator, OpenAIlikedTranslator
+from pdf2ja import cache
+from pdf2ja.config import ConfigManager
+from pdf2ja.translator import BaseTranslator, OllamaTranslator, OpenAIlikedTranslator
 
 # Since it is necessary to test whether the functionality meets the expected requirements,
 # private functions and private methods are allowed to be called.

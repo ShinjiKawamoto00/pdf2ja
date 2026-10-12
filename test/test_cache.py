@@ -1,5 +1,5 @@
 import unittest
-from pdf2zh import cache
+from pdf2ja import cache
 
 
 class TestCache(unittest.TestCase):

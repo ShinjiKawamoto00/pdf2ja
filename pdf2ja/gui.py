@@ -15,11 +15,11 @@ from gradio_pdf import PDF
 from string import Template
 import logging
 
-from pdf2zh import __version__
-from pdf2zh.high_level import translate
-from pdf2zh.doclayout import ModelInstance
-from pdf2zh.config import ConfigManager
-from pdf2zh.translator import (
+from pdf2ja import __version__
+from pdf2ja.high_level import translate
+from pdf2ja.doclayout import ModelInstance
+from pdf2ja.config import ConfigManager
+from pdf2ja.translator import (
     AnythingLLMTranslator,
     AzureOpenAITranslator,
     AzureTranslator,
@@ -352,8 +352,8 @@ def translate_file(
     }
 
     try:
-        from pdf2zh.kernel import KernelRegistry
-        from pdf2zh.kernel.protocol import TranslateRequest
+        from pdf2ja.kernel import KernelRegistry
+        from pdf2ja.kernel.protocol import TranslateRequest
 
         KernelRegistry.switch(mode_choice)
         kernel = KernelRegistry.get()

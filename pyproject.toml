@@ -1,11 +1,11 @@
 [project]
-name = "pdf2zh"
+name = "pdf2ja"
 version = "1.9.12"
 description = "Latex PDF Translator"
 authors = [{ name = "Byaidu", email = "byaidux@gmail.com" }]
 license = "AGPL-3.0"
 readme = "README.md"
-requires-python = ">=3.11,<3.13"
+requires-python = ">=3.11,<=3.13.7"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
@@ -34,7 +34,7 @@ dependencies = [
     "pikepdf",
     "peewee>=3.17.8",
     "fontTools",
-    "babeldoc>=0.1.22, <0.3.0",
+    "babeldoc>=0.3.50",
     "rich",
 ]
 
@@ -60,7 +60,7 @@ cuda = [
 dml = [
     "onnxruntime-directml",
 ]
-precise = []  # marker — run `pdf2zh-setup-precise` after install to provision the isolated venv
+precise = []  # marker — run `pdf2ja-setup-precise` after install to provision the isolated venv
 
 [dependency-groups]
 dev = [
@@ -80,8 +80,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project.scripts]
-pdf2zh = "pdf2zh.pdf2zh:main"
-pdf2zh-setup-precise = "pdf2zh.kernel.precise:setup_precise_cli"
+pdf2ja = "pdf2ja.pdf2ja:main"
+pdf2ja-setup-precise = "pdf2ja.kernel.precise:setup_precise_cli"
 
 [tool.flake8]
 ignore = ["E203", "E261", "E501", "W503", "E741"]
@@ -98,6 +98,6 @@ version_pattern = "MAJOR.MINOR.PATCH[.PYTAGNUM]"
     'current_version = "{version}"',
     'version = "{version}"'
 ]
-"pdf2zh/__init__.py" = [
+"pdf2ja/__init__.py" = [
     '__version__ = "{version}"'
 ]
