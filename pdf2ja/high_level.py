@@ -133,7 +133,7 @@ def translate_patch(
         lines_in = fixed_in.splitlines()
         ref_count = sum(1 for l in lines_in if re.match(r"^(\[\d+\]|\d+\.)", l.strip()))
         if ref_count >= 4:
-            print(f"[APPLIED fix_reference_newlines] 分割翻訳を実行: {ref_count}件の文献")
+            #print(f"[APPLIED fix_reference_newlines] 分割翻訳を実行: {ref_count}件の文献")
             chunks = []
             chunk_size = 5
             for k in range(0, len(lines_in), chunk_size):

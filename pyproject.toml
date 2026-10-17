@@ -26,7 +26,7 @@ dependencies = [
     "gradio<5.36",
     "huggingface_hub",
     "onnx",
-    "onnxruntime",
+    # "onnxruntime",
     "opencv-python-headless",
     "tencentcloud-sdk-python-tmt==3.1.70",  # newer releases remove TextTranslate
     "pdfminer-six==20250416",
@@ -54,8 +54,13 @@ argostranslate = [
 mcp = [
     "mcp>=1.6.0",
 ]
+# CPU のみ
+cpu = [
+    "onnxruntime>=1.20.0",
+]
+# ★ cuda の定義を拡張（CUDA 13.x / CUDA 13.2 対応）
 cuda = [
-    "onnxruntime-gpu",
+    "onnxruntime-gpu[cuda,cudnn]>=1.27,<2",
 ]
 dml = [
     "onnxruntime-directml",
@@ -86,8 +91,6 @@ pdf2ja-setup-precise = "pdf2ja.kernel.precise:setup_precise_cli"
 [tool.flake8]
 ignore = ["E203", "E261", "E501", "W503", "E741"]
 max-line-length = 88
-
-
 
 [bumpver]
 current_version = "1.9.12"
