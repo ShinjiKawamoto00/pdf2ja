@@ -192,6 +192,8 @@ pdf2ja input.pdf --service openai:google/gemini-2.5-flash --backend cpu --output
 
 論文 [Critical role of water in defect aggregation and chemical degradation of perovskite solar cells](https://arxiv.org/pdf/1708.07606) を使用して和訳の検証を実施。
 
+- 原論文 1708.07606.pdf をダウンロードしたフォルダで実行してください。
+
 
 ### 1. [Groq](https://console.groq.com/home)
 
