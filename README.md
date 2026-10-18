@@ -93,7 +93,7 @@ pip install -e ".[cuda]"
 GitHub から直接インストールする場合：
 
 ```bash
-pip install "git+https://github.com/ShinjiKawamoto00/pdf2ja.git#egg=pdf2ja[cuda]"
+pip install "pdf2ja[cuda] @ git+https://github.com/ShinjiKawamoto00/pdf2ja.git"
 ```
 
 ### 5.2 CPU 版のインストール（GPU なし・標準環境）
@@ -108,7 +108,7 @@ pip install -e ".[cpu]"
 GitHub から直接インストールする場合：
 
 ```bash
-pip install git+https://github.com/ShinjiKawamoto00/pdf2ja.git
+pip install "pdf2ja[cpu] @ git+https://github.com/ShinjiKawamoto00/pdf2ja.git"
 ```
 
 ### 動作確認（ONNX Runtime のプロバイダ確認）
