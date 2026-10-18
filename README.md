@@ -2,6 +2,7 @@
 
 - [PDFMathTranslate](https://github.com/PDFMathTranslate/PDFMathTranslate)  をベースに、学術論文の日本語翻訳および組版精度を大幅に向上させた拡張リポジトリです。
 - 比較的安価な LLM（`gemini-2.5-flash`, `gpt-oss-120b`, `deepseek-v4.1-flash` 等）を用いた翻訳に対応し、特に **参考文献（References）セクションの文字切れ・改行誤爆・組版オーバーフロー問題** を根本から解決しています。
+- 翻訳した PDF 論文サンプルは、 [pdf2ja 学術論文の日本語翻訳](https://neoluxinc.com/pdf2ja/) をご覧ください。
 
 ---
 
@@ -87,11 +88,6 @@ NVIDIA GPU（CUDA 環境）を利用して、ONNX Runtime の推論を GPU ア�
 ```bash
 # GPU (CUDA) オプション付きでインストール
 pip install -e ".[cuda]"
-
-# ※ CPU 版 onnxruntime が重複して入っていると GPU 版が優先されないことがあるため、
-#    必要に応じてアンインストールしてから GPU 版を入れ直してください
-# pip uninstall -y onnxruntime onnxruntime-gpu
-# pip install onnxruntime-gpu[cuda,cudnn]>=1.27,<2
 ```
 
 GitHub から直接インストールする場合：
